@@ -34,14 +34,14 @@ future releases and also provide technical support for current users.
 = How do I get help using SchemaFeed? =
 
 There are mainly 2 methods. You can use the <a href="http://www.schemafeed.com/forum">SchemaFeed forum</a> which is the preferred way, we'll
-try and answer questions within the same day. Alternatively, head over to our <a href="http://www.schemafeed.com/Contact">contact form</a>.
-You may also find some answers in the help notes at <a href="admin.php?page=wp__help">help page</a>.
+try and answer questions within the same day. Alternatively, head over to our <a href="http://www.schemafeed.com/Contact.html">contact form</a>.
+You may also find some answers in the help notes within the plugin.
 
 = How do I customize the schema properties at the bottom of the post? =
 
 Most of the properties you can define is displayed at the bottom of a posting. There are two areas where you can control the look and feel.
-<a href="admin.php?page=wp__help">Schema Settings</a> controls the general structural template. Within that template, there are coding 
-variables shown with within the brackets "[[" and "]]", these are replaced with the actual property names and values. The
+Schema Settings controls the general structural template. Within that template, there are coding 
+variables ( place holders ) shown within the brackets "[[" and "]]", these are replaced with the actual property names and values. The
 visual aspect is controlled via the CSS file "style.css" located in the plugin folder "schemafeed/css/style.css". 
 To edit, goto Plugins->SchemaFeed (Edit), then select the file "schemafeed/css/style.css".
 
@@ -58,7 +58,7 @@ Upload the SchemaFeed plugin to your blog, Activate it, then read the Help page 
 
 == Changelog ==
 
-= 0.5 =
+= 0.5  (24 October 2011) =
 * First release
 
 == Upgrade Notice ==
