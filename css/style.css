@@ -1,0 +1,19 @@
+.schema_property_wrap {
+    margin-bottom: 5px;
+}
+
+.schema_property {
+    
+}
+
+.schema_property_name {
+    font-size: 90%;
+}
+
+.schema_alternativeHeadline {
+    font-size: 100%;    
+}
+
+#icon-schemafeed {
+    background: url( "../img/schemafeed_32_grey.png" ) no-repeat scroll 1px 1px transparent;
+}
