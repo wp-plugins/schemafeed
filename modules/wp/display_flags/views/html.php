@@ -57,7 +57,7 @@
         for( $idx=0; $idx<sizeof( $schema ); $idx++ ) {
         
             $schema_name1 = trim( $schema[$idx][ 'schemas.schema_name' ] );
-            $schema_name2 = str_replace( '~', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $schema[$idx][ 'schemas.schema_name_display' ] );
+            $schema_name2 = wpsf_mb_replace( '~', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $schema[$idx][ 'schemas.schema_name_display' ] );
             
             $selected = '';
             if ( $schema_name == $schema_name1 ) { $selected = ' selected="" '; }

@@ -58,7 +58,7 @@ class wp__save_schema_property_flags extends root {
 
                 if ( strstr( $post_key, 'wpsf_' ) ) {
     
-                    $current_field_name = str_replace( 'wpsf_', '', $post_key );
+                    $current_field_name = wpsf_mb_replace( 'wpsf_', '', $post_key );
         
                     if ( !empty( $current_field_name ) ) {
                     

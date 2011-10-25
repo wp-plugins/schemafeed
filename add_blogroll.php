@@ -6,7 +6,7 @@
         
         // ## "significantLinks" property
 
-        $links = str_replace( '<li ', '<li itemprop="significantLinks"', $links );                  
+        $links = wpsf_mb_replace( '<li ', '<li itemprop="significantLinks"', $links );                  
                   
         return $links;
     }

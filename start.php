@@ -58,7 +58,7 @@
         }
             
         if ( !$all_schemas_off ) {
-                        
+                                
             // ## add schema during loop
             include( WP_PLUGIN_DIR . '/schemafeed/loop_replace.php' );
             

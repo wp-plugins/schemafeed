@@ -7,7 +7,17 @@
         global $post;    	
         
         $dom = new DOMDocument;
-        $dom->loadHTML( $buffer );
+        
+        // UTF8 hack        
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $buffer);
+        // dirty fix
+        foreach ($doc->childNodes as $item) {
+            if ($item->nodeType == XML_PI_NODE) {
+                $dom->removeChild($item); // remove hack
+            }
+        }
+        $dom->encoding = 'UTF-8'; // insert proper
+        
         $xpath = new DOMXPath($dom);
         
         // ## do h2 tags, only for loop pages
@@ -18,7 +28,7 @@
             for ($i = 0; $i < $h2_tag->length; $i++) {
                 
                 $id_val_1 = $h2_tag->item($i)->parentNode->getAttribute( "id" );
-                $id_val_2 = str_replace( 'post-', '', $id_val_1 ); 
+                $id_val_2 = wpsf_mb_replace( 'post-', '', $id_val_1 ); 
                 
                 $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
                 
@@ -59,7 +69,7 @@
             $h1_tag = $dom->getElementsByTagName('h1');
             
             $id_val_1 = $h1_tag->item(0)->parentNode->getAttribute( "id" );
-            $id_val_2 = str_replace( 'post-', '', $id_val_1 ); 
+            $id_val_2 = wpsf_mb_replace( 'post-', '', $id_val_1 ); 
             
             $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
             
@@ -74,13 +84,13 @@
         // ## the following is done after saveHTML
         
         // ## do body tag, noddy solution, lets use dom later
-        $buffer2 = str_replace( '<body ', '<body itemscope itemtype="http://schema.org/WebPage" ', $buffer2 );    
+        $buffer2 = wpsf_mb_replace( '<body ', '<body itemscope itemtype="http://schema.org/WebPage" ', $buffer2 );    
         
         // ## do global "comment" property, noddy solution, lets use dom later, see also add_schema_comment.php
-        $buffer2 = str_replace( 'id="comments"', 'id="comments" itemprop="comment"', $buffer2 ); 
+        $buffer2 = wpsf_mb_replace( 'id="comments"', 'id="comments" itemprop="comment"', $buffer2 ); 
 
         // bit noddy, but find proper solution later.
-        $buffer2 = str_replace( 'itemscope=""', 'itemscope', $buffer2 );
+        $buffer2 = wpsf_mb_replace( 'itemscope=""', 'itemscope', $buffer2 );
         
     	return $buffer2;
     }

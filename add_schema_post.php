@@ -87,11 +87,12 @@
                 $sub_values[ 'property_display_name' ] = $field_name_display;
                 $sub_values[ 'schema_property_name' ] = $field_name;
                 
+                $sub_values[ 'schema_property_value' ] = '';
                 if ( $content_attrib_fill ) {
-                    $sub_values[ 'schema_property_value' ] = $meta_value;
+                    $sub_values[ 'schema_property_value' ] = htmlentities( $meta_value );
                 }
                 
-                $sub_values[ 'schema_property_display_value' ] = $display_meta_value;
+                $sub_values[ 'schema_property_display_value' ] = htmlentities( $display_meta_value );
             
                 $post_template_val = wpsf_sub_values( $post_template, $sub_values );
             
@@ -103,14 +104,14 @@
                                 
         // ## "image" property
         // we consider the first one as the "image" of the schema.
-        $content = preg_replace( '/<img /', '/<img itemprop="image" /', $content, 1 );
+        $content = mb_ereg_replace( '<img ', '<img itemprop="image" ', $content, 1 );
         
         // ## "description" property
         // This is added to the start of the post   
         $description_html = '';
         $description_prop = wpsf_vset( $meta_keys[ '_wpsf_'.$schema_type.'_description' ] );
         if ( !empty( $description_prop ) ) {
-            $description_html = '<strong itemprop="description">'.$description_prop[ 'wp_postmeta.meta_value' ].'</strong><br />';
+            $description_html = '<strong itemprop="description">'.htmlentities( $description_prop[ 'wp_postmeta.meta_value' ] ).'</strong><br />';
         }   
         
         // ## "alternativeHeadline" property
@@ -119,7 +120,7 @@
         $alternativeHeadline_prop = wpsf_vset( $meta_keys[ '_wpsf_'.$schema_type.'_alternativeHeadline' ][ $wpdb->postmeta.'.meta_value' ] );
         if ( !empty( $alternativeHeadline_prop ) ) {
             if ( is_single( $post_id ) ) {
-                $alternativeHeadline_html = '<h2 itemprop="alternativeHeadline" class="schema_alternativeHeadline">'.$alternativeHeadline_prop.'</h2>';
+                $alternativeHeadline_html = '<h2 itemprop="alternativeHeadline" class="schema_alternativeHeadline">'.htmlentities( $alternativeHeadline_prop ).'</h2>';
             }
         }      
         
@@ -148,7 +149,7 @@
         if ( !empty( $tags ) ) {
         
             for( $idx=0; $idx<sizeof( $tags ); $idx++ ) {
-                $keywords[] = $tags[$idx]->name;          
+                $keywords[] = htmlentities( $tags[$idx]->name );          
             }
         
             $schema_fields .= '<meta itemprop="keywords" content="'.implode( ',', $keywords ).'">';
@@ -162,7 +163,7 @@
                 $thumbnailUrl = '<img align="right" src="'.$thumbnailUrl_prop.'">';
                 
                 // place it within the content to the right 
-                $content = str_replace( '<p>', '<p>'.$thumbnailUrl, $content );     
+                // $content = wpsf_mb_replace( '<p>', '<p>'.$thumbnailUrl, $content );     
             }
         }  
         
@@ -222,7 +223,7 @@
     function wpsf_add_schema_the_excerpt( $the_excerpt ) {
         
         // excerpt should be a summary rather than the description, to do later.
-        // return str_replace( '<p>', '<p itemprop="description">', $the_excerpt );
+        // return wpsf_mb_replace( '<p>', '<p itemprop="description">', $the_excerpt );
         return $the_excerpt;
     }
     

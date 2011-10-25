@@ -59,7 +59,7 @@ class schema__save_schema_record extends root {
         
             if ( strstr( $key, 'wpsf__' ) ) {
             
-                $field_name = str_replace( 'wpsf__', '', $key );
+                $field_name = wpsf_mb_replace( 'wpsf__', '', $key );
                 
                 if ( $field_name == 'name' ) {
                     $post_vars[ 'post_title' ] = $value;

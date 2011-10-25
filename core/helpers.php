@@ -303,7 +303,7 @@
     		$template = ob_get_contents();
     		ob_end_clean();
     
-    		$result = str_replace( '{{module}}', $content, $template );
+    		$result = wpsf_mb_replace( '{{module}}', $content, $template );
     	}
     	else {
     		$result = $content;
@@ -475,7 +475,7 @@
                     list( $table, $column ) = $map[ $index ];
                     
                     if ( $table ) {
-                        $table2 = str_replace( $wpdb->prefix.'sf_', '', $table );
+                        $table2 = wpsf_mb_replace( $wpdb->prefix.'sf_', '', $table );
                         $current_row[ $table2.'.'.$column ] = $row[ $index ];
                     }
                     else {
@@ -569,7 +569,7 @@
     
     function wpsf_single_quote_clean( $string = '' ) {
     
-    	$result = str_replace( "'", "\'", $string );
+    	$result = wpsf_mb_replace( "'", "\'", $string );
     	
     	return $result;
     }
@@ -579,7 +579,7 @@
     	srand((double)microtime()*1000000);
     	$unique_id = md5( uniqid( rand(), true) );
     
-    	return str_replace( ".", "", $unique_id );
+    	return wpsf_mb_replace( ".", "", $unique_id );
     }
     
     function wpsf_nl( $string = '' ) {
@@ -636,7 +636,7 @@
     
     	if ( strstr( $string_array, '[' ) ) {
     
-    		$string_array = str_replace( ']', '', $string_array );
+    		$string_array = wpsf_mb_replace( ']', '', $string_array );
     		$string_array = explode( '[', $string_array );
     
     		$array_name_1 = '';
@@ -960,7 +960,7 @@
     
         // because db tables must start with a letter, and uuid is used so much, we artificially append and "a"
     
-    	return str_replace( ".", "", 'a'.$unique_id );
+    	return wpsf_mb_replace( ".", "", 'a'.$unique_id );
     }
     
     // Note, this actually creates the variable globally if not set
@@ -1283,7 +1283,7 @@
         
         if ( is_array( $tokens ) ) {
             foreach( $tokens as $token_name => $token_value ) {
-                $result = str_replace( '{{'.$token_name.'}}', $token_value, $result );
+                $result = wpsf_mb_replace( '{{'.$token_name.'}}', $token_value, $result );
             }
         }
         
@@ -1422,15 +1422,15 @@
     function wpsf_sub_values( $template, $sub_vals = array() ) {
     
         $result = $template;
-        
+                        
         foreach( $sub_vals as $key => $value ) {
         
-            $result = str_replace( '[['.$key.']]', $value, $result );
-        }
+            $result = wpsf_mb_replace( '[['.$key.']]', $value, $result );
+        }                    
         
         return $result;
     }
-    
+       
     function wpsf_word_count( $content ) {
     
         $result = str_word_count( strip_tags( $content ), 0 );
@@ -1448,5 +1448,41 @@
         
         return $fields;
     } 
+    
+    function wpsf_mb_replace( $search, $replace, $subject, &$count=0 ) {
+        
+        if (!is_array($search) && is_array($replace)) {
+            return false;
+        }
+        if (is_array($subject)) {
+            // call mb_replace for each single string in $subject
+            foreach ($subject as &$string) {
+                $string = &mb_replace($search, $replace, $string, $c);
+                $count += $c;
+            }
+        } elseif (is_array($search)) {
+            if (!is_array($replace)) {
+                foreach ($search as &$string) {
+                    $subject = mb_replace($string, $replace, $subject, $c);
+                    $count += $c;
+                }
+            } else {
+                $n = max(count($search), count($replace));
+                while ($n--) {
+                    $subject = mb_replace(current($search), current($replace), $subject, $c);
+                    $count += $c;
+                    next($search);
+                    next($replace);
+                }
+            }
+        } else {
+            $parts = mb_split(preg_quote($search), $subject);
+            $count = count($parts)-1;
+            $subject = implode($replace, $parts);
+        }
+        
+        return $subject;
+    }
+
   
 ?>
