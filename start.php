@@ -69,7 +69,8 @@
             include( WP_PLUGIN_DIR . '/schemafeed/add_schema_post.php' );
             
             // ## add schema property "name" to the title of the post
-            include( WP_PLUGIN_DIR . '/schemafeed/add_schema_post_title.php' );
+            // seems to cause strange problems with plugin "only-tweet-like-share-and-google-1"
+            // include( WP_PLUGIN_DIR . '/schemafeed/add_schema_post_title.php' );
             
             // ## add schema property "comment" to comment posts
             include( WP_PLUGIN_DIR . '/schemafeed/add_schema_comment.php' );

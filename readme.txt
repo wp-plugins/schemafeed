@@ -4,7 +4,7 @@ Donate link: http://www.schemafeed.com/
 Tags: SchemaFeed, schema.org, semantic web
 Requires at least: 3.0
 Tested up to: 3.0RC1
-Stable tag: 0.51
+Stable tag: 0.52
 License: GPLv2 or later
 
 Promote and enhance your data and SEO strategy using the schema.org format.
@@ -57,6 +57,9 @@ Upload the SchemaFeed plugin to your blog, Activate it, then read the Help page 
 4. Schema properties in HTML and visible to search engines.
 
 == Changelog ==
+
+= 0.52  (3 November 2011) =
+* Fix so it works with "only-tweet-like-share-and-google-1"
 
 = 0.51  (25 October 2011) =
 * Multi byte fix
