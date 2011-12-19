@@ -62,6 +62,7 @@
                         meta_field tinyint(4) NOT NULL,
                         content_attrib_fill tinyint(4) NOT NULL,
                         sf_display_filter varchar(255) NOT NULL,
+                        not_display tinyint(4) NOT NULL,
                         PRIMARY KEY (schema_field_id),
                         KEY field_name (field_name),
                         KEY type_name (type_name),

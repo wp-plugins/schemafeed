@@ -591,14 +591,14 @@ class simple_html_dom_node {
             case '!=':
                 return ($value!==$pattern);
             case '^=':
-                return preg_match("/^".preg_quote($pattern,'/')."/", $value);
+                return preg_match("/^".preg_quote($pattern,'/')."/u", $value);
             case '$=':
-                return preg_match("/".preg_quote($pattern,'/')."$/", $value);
+                return preg_match("/".preg_quote($pattern,'/')."$/u", $value);
             case '*=':
                 if ($pattern[0]=='/') {
                     return preg_match($pattern, $value);
                 }
-                return preg_match("/".$pattern."/i", $value);
+                return preg_match("/".$pattern."/ui", $value);
         }
         return false;
     }
@@ -614,7 +614,7 @@ class simple_html_dom_node {
 // This implies that an html attribute specifier may start with an @ sign that is NOT captured by the expression.
 // farther study is required to determine of this should be documented or removed.
 //        $pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
-        $pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-:]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
+        $pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-:]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/isu";
         preg_match_all($pattern, trim($selector_string).' ', $matches, PREG_SET_ORDER);
         if (is_object($debugObject)) {$debugObject->debugLog(2, "Matches Array: ", $matches);}
 
@@ -947,7 +947,7 @@ class simple_html_dom {
         if (function_exists('get_last_retrieve_url_contents_content_type'))
         {
             $contentTypeHeader = get_last_retrieve_url_contents_content_type();
-            $success = preg_match('/charset=(.+)/', $contentTypeHeader, $matches);
+            $success = preg_match('/charset=(.+)/u', $contentTypeHeader, $matches);
             if ($success)
             {
                 $charset = $matches[1];
@@ -966,7 +966,7 @@ class simple_html_dom {
 
                 if (!empty($fullvalue))
                 {
-                    $success = preg_match('/charset=(.+)/', $fullvalue, $matches);
+                    $success = preg_match('/charset=(.+)/u', $fullvalue, $matches);
                     if ($success)
                     {
                         $charset = $matches[1];
@@ -1107,7 +1107,7 @@ class simple_html_dom {
             return true;
         }
 
-        if (!preg_match("/^[\w-:]+$/", $tag)) {
+        if (!preg_match("/^[\w-:]+$/u", $tag)) {
             $node->_[HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until('<>');
             if ($this->char==='<') {
                 $this->link_nodes($node, false);

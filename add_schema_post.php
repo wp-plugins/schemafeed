@@ -66,6 +66,7 @@
             $plain_display_field = $values[ 'schema_fields.plain_display_field' ];
             $content_attrib_fill = $values[ 'schema_fields.content_attrib_fill' ];
             
+            // can field be displayed as is
             if ( $plain_display_field == 0 ) {
                 continue;
             }

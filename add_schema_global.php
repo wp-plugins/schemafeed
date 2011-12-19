@@ -2,33 +2,168 @@
 
     if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die( 'This page cannot be called directly.' ); }
 
+    function wpsf_backward_stripos($haystack, $needle, $offset = 0){
+    
+        $length = mb_strlen($haystack);
+        $offset = ($offset > 0)?($length - $offset):abs($offset);
+        $pos = mb_stripos(strrev($haystack), strrev($needle), $offset);
+        file_put_contents( "c:\\Temp\\aaa2.txt", $offset );
+        return ($pos === false)?false:( $length - $pos - mb_strlen($needle) );
+    }
+    
+    function wpsf_mb_substr_replace($output, $replace, $posOpen, $posClose) {
+        return mb_substr($output, 0, $posOpen).$replace.mb_substr($output, $posClose+1);
+    } 
+    
     function wpsf_page_callback( $buffer ) {
     	
         global $post;    	
         
-        include( WP_PLUGIN_DIR . '/schemafeed/core/simplehtmldom/simple_html_dom.php' );
-        
-        $html = wpsf_str_get_html( $buffer );
-        
-        // ## do h2 tags, only for loop pages
-        if ( in_the_loop() ) {
-                      
-            $h2_tags = $html->find( 'h2' );
-            
-            for ($i = 0; $i<sizeof($h2_tags); $i++) {
-                
-                $h2_tag_parent = $h2_tags[$i]->parent();
-                $h2_tag_parent_id = $h2_tag_parent->id;
-                
-                if ( $h2_tag_parent_id ) {
+        // simple way of adding schema.org values without using complex dom parser, more reliable?
                     
-                    $id_val_2 = wpsf_mb_replace( 'post-', '', $h2_tag_parent_id ); 
-                    $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
-                    $h2_tag_parent->itemtype = "http://schema.org/".wpsf_vset( $schema_type[0] );
+        // ## h1 "itemprop" name, we assume there can only be one h1 for seo reasons, but cater for many just in case
+        $stop_infin = 0;   
+        
+        while ( $h1_start = stripos( $buffer, '<h1', $h1_start ) ) {
+        
+            // we only allow 100 posts per page
+            if ( $stop_infin++ > 100 ) {
+                break;
+            }
+        
+            $h1_start2 = mb_stripos( $buffer, '>', $h1_start );
+            $h1_end = mb_stripos( $buffer, '</h1>', $h1_start2 );
+            $h1_tag = mb_substr( $buffer, $h1_start2 + 1, $h1_end - $h1_start2 - 1 );
+            // $buffer = htmlentities( $h1_tag ).'=='.$buffer;
+            $buffer = wpsf_mb_substr_replace( $buffer, '<span itemprop="name">'.$h1_tag.'</span>', $h1_start2+1, $h1_start2+mb_strlen( $h1_tag ) );
+            
+            // this is needed so we don't find the same h1 again as a result of adding more characters in parent tag
+            $h1_start = stripos( $buffer, '<h1', $h1_start )+1;
+        }
+        
+        // ## h1 parent "itemtype"
+        $h1_start = 0; 
+        $stop_infin = 0;   
+        
+        while ( $h1_start = stripos( $buffer, '<h1', $h1_start ) ) {
+            
+            // we only allow 100 posts per page
+            if ( $stop_infin++ > 100 ) {
+                break;
+            }
+            
+            // find parent id
+            $length = mb_strlen( $buffer );
+            $parent_id_start = mb_strrpos( $buffer, ' id="post-', -( $length - $h1_start ) );
+            
+            if ( $parent_id_start ) {
+                
+                $parent_id_end = mb_stripos( $buffer, '" ', $parent_id_start );
+                
+                if ( $parent_id_end ) {
+                    
+                    $parent_id_1 = mb_substr( $buffer, $parent_id_start, $parent_id_end - $parent_id_start + 1 );
+        
+                    $id_val_2 = wpsf_mb_replace( 'id="post-', '', $parent_id_1 ); 
+                    $id_val_2 = wpsf_mb_replace( '"', '', $id_val_2 ); 
+                    $id_val_2 = trim( $id_val_2 );
+                    $tmp .= '='.$h1_start.'=';
+                    if ( is_numeric( $id_val_2 ) ) {
+                          
+                        // find schema type and item type
+                        $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
+                        
+                        if ( sizeof( $schema_type ) > 0 ) {
+                            
+                            $item_type = "http://schema.org/".wpsf_vset( $schema_type[0] );
+                
+                            // add parent itemtype and itemscope                
+                            $buffer = wpsf_mb_substr_replace( $buffer, ' itemscope="" itemtype="'.$item_type.'" ', $parent_id_start, $parent_id_start );
+                        }
+                    }                        
                 }
             }
+            
+            // this is needed so we don't find the same h1 again as a result of adding more characters in parent tag
+            $h1_start = stripos( $buffer, '<h1', $h1_start )+1;
         }
+        
+        // ## h2 "itemprop" name, we assume there can only be one h2 for seo reasons, but cater for many just in case
+        // same/similiar to h1, but less complex
+        $stop_infin = 0;   
+        
+        while ( $h2_start = stripos( $buffer, '<h2', $h2_start ) ) {
+        
+            // we only allow 100 posts per page
+            if ( $stop_infin++ > 100 ) {
+                break;
+            }
+        
+            $h2_start2 = mb_stripos( $buffer, '>', $h2_start );
+            $h2_end = mb_stripos( $buffer, '</h2>', $h2_start2 );
+            $h2_tag = mb_substr( $buffer, $h2_start2 + 1, $h2_end - $h2_start2 - 1 );
+            // $buffer = htmlentities( $h2_tag ).'=='.$buffer;
+            $buffer = wpsf_mb_substr_replace( $buffer, '<span itemprop="name">'.$h2_tag.'</span>', $h2_start2+1, $h2_start2+mb_strlen( $h2_tag ) );
+            
+            // this is needed so we don't find the same h2 again as a result of adding more characters in parent tag
+            $h2_start = stripos( $buffer, '<h2', $h2_start )+1;
+        }
+        
+        // ## h2 parent "itemtype"
+        $h2_start = 0; 
+        $stop_infin = 0;   
+        
+        while ( $h2_start = stripos( $buffer, '<h2', $h2_start ) ) {
+            
+            // we only allow 100 posts per page
+            if ( $stop_infin++ > 100 ) {
+                break;
+            }
+            
+            // find parent id
+            $length = mb_strlen( $buffer );
+            $parent_id_start = mb_strrpos( $buffer, ' id="post-', -( $length - $h2_start ) );
+            
+            if ( $parent_id_start ) {
                 
+                $parent_id_end = mb_stripos( $buffer, '" ', $parent_id_start );
+                
+                if ( $parent_id_end ) {
+                    
+                    $parent_id_1 = mb_substr( $buffer, $parent_id_start, $parent_id_end - $parent_id_start + 1 );
+        
+                    $id_val_2 = wpsf_mb_replace( 'id="post-', '', $parent_id_1 ); 
+                    $id_val_2 = wpsf_mb_replace( '"', '', $id_val_2 ); 
+                    $id_val_2 = trim( $id_val_2 );
+                    $tmp .= '='.$h2_start.'=';
+                    if ( is_numeric( $id_val_2 ) ) {
+                          
+                        // find schema type and item type
+                        $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
+                        
+                        if ( sizeof( $schema_type ) > 0 ) {
+                            
+                            $item_type = "http://schema.org/".wpsf_vset( $schema_type[0] );
+                
+                            // add parent itemtype and itemscope                
+                            $buffer = wpsf_mb_substr_replace( $buffer, ' itemscope="" itemtype="'.$item_type.'" ', $parent_id_start, $parent_id_start );
+                        }
+                    }                        
+                }
+            }
+            
+            // this is needed so we don't find the same h2 again as a result of adding more characters in parent tag
+            $h2_start = stripos( $buffer, '<h2', $h2_start )+1;
+        }
+        
+        // ## do body tag
+        $buffer = wpsf_mb_replace( '<body ', '<body itemtype="http://schema.org/WebPage" itemscope="" ', $buffer ); 
+        
+        // ## do global "comment" property, see also add_schema_comment.php
+        $buffer = wpsf_mb_replace( 'id="comments"', 'id="comments" itemprop="comment"', $buffer ); 
+        
+        /*
+        // to add again in next version
         // ## do "audio" and "video" property
         $a_tags = $html->find( 'a' );
         
@@ -55,43 +190,9 @@
                 $a_tags[$i]->itemprop = "video";
             }
         }
-        
-        // ## do h1, only for single pages
-        if ( is_single( $post ) ) {
-                    
-            $h1_tags = $html->find( 'h1' );
-            
-            if ( isset( $h1_tags[0] ) ) {
-                
-                $h1_tag_parent = $h1_tags[0]->parent();
-                $h1_tag_parent_id = $h1_tag_parent->id;
-                
-                if ( $h1_tag_parent_id ) {
-                    
-                    $id_val_2 = wpsf_mb_replace( 'post-', '', $h1_tag_parent_id ); 
-                    $schema_type = get_post_meta( $id_val_2, '_wpsf_schema_type' );
-                    $h1_tag_parent->itemtype = "http://schema.org/".wpsf_vset( $schema_type[0] );
-                    $h1_tag_parent->itemscope = "";
-                    
-                    // this replaces the "the_title" filter method
-                    $h1_tags[0]->innertext = '<span itemprop="name">'.$h1_tags[0]->innertext.'</span>'; 
-                }
-            }
-        }
-        
-        // ## do body tag
-        $body_tags = $html->find( 'body' );
-        
-        if ( isset( $body_tags[0] ) ) {
-            
-            $body_tags[0]->itemtype = "http://schema.org/WebPage";
-            $body_tags[0]->itemscope = "";
-        }
-        
-        // ## do global "comment" property, noddy solution, lets use dom later, see also add_schema_comment.php
-        $html2 = wpsf_mb_replace( 'id="comments"', 'id="comments" itemprop="comment"', $html ); 
+        */
 
-    	return $html2;
+    	return $buffer;
     }
     
     function wpsf_page_buffer_start() {

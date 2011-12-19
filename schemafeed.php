@@ -4,7 +4,7 @@
 Plugin Name: SchemaFeed
 Plugin URI: http://wordpress.org/extend/plugins/schemafeed/
 Description: Promote and enhance your data and SEO strategy using the schema.org format.
-Version: 0.52
+Version: 0.6
 Author: Kai Chan, Marcus Moxon
 Author URI: http://schemafeed.com
 */

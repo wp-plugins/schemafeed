@@ -95,14 +95,10 @@
                     Pick the closest schema that matches your article. Pick a schema higher up if you can\'t find a specific schema.
                     Each post can have a different Schema. Within each property, you can seperate different values you enter with a comma.
                 </p>                    
-                
-                <br /><br />
-                            
+                          
                 Pick Schema:&nbsp;<select name="_wpsf_schema_type" onChange="wpsf_add_fields( this.options[this.selectedIndex].value, $(\'#post_ID\').val() )">
                     '.$schema_options.'
                 </select>
-                
-                <br />
 
                 <div id="schema_fields" style="visibility: hidden;">
                     '.$schema_fields.'                                           

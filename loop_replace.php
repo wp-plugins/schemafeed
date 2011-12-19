@@ -2,6 +2,7 @@
 
     function wpsf_loop_callback($buffer) {
     	
+    	    	
     	return $buffer;
     }
     

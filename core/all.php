@@ -20,7 +20,7 @@
     define( "WPSF_PATH", 'wp-content/plugins/schemafeed' );
     
     // global vars    
-    $wpsf_db_version = "1.0";
+    $wpsf_db_version = "1.1";
     
     // Application servers
     require( 'current_servers.php' );

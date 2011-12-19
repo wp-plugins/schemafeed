@@ -58,7 +58,7 @@ class schema__get_schema_tree extends root {
             
             $this->schema_tree( $records_1[0][ 'schemas.schema_name' ], '~' );
         }
-               
+
         $this->result[ 'schema' ] = $this->schema;         
     }
        
